@@ -6,6 +6,7 @@ import React, { useEffect, useState, useRef } from "react";
 import Chat from "./Chat";
 import Sismo from "./Sismo";
 import styles from "./Home.module.css";
+import styled from 'styled-components';
 
 // const PEER_ADDRESS = "0x937C0d4a6294cdfa575de17382c7076b579DC176";
 const PEER_ADDRESS = "0xd684Ce5aAa919E99Fc030a379112668128644Cce";
@@ -19,6 +20,97 @@ const Modes = {
   GMed: 64,
   ConnectSent: 128,
 }
+function getSetModes(mode) {
+  return Object.keys(Modes).filter(key => mode & Modes[key]).join(', ');
+}
+
+const CardButtonWrapper = styled.div`
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s, border 0.2s;
+
+  &:hover {
+    transform: ${props => (!props.completed ? 'scale(1.01);' : 'none;')};
+  }
+`;
+const IndexNumber = styled.span`
+  position: absolute;
+  top: 10px; /* Adjust this value to position the number vertically */
+  left: 10px; /* Adjust this value to position the number horizontally */
+  font-size: 16px;
+  color: #3498db; /* Color of the number */
+  background-color: white; /* Background color of the number */
+  padding: 4px 8px;
+  border-radius: 50%;
+`;
+
+const CardButton = ({ title, description, completed, index, Connect }) => {
+  const cardButtonStyle = {
+    width: '350px',
+    height: '250px',
+    border: 'none',
+    borderRadius: '10px',
+    boxShadow: !completed ? '0 4px 8px rgba(0, 0, 0, 0.3)' : 'none',
+    backgroundColor: completed ? 'rgb(217 152 34)' : '#3498db',
+    color: completed ? 'white' : 'white',
+    // cursor: completed ? 'default' : 'pointer',
+    outline: 'none',
+
+  };
+
+  const cardContentStyle = {
+    padding: '0 32px',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+  };
+
+  const cardHeaderStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '16px',
+    marginTop: '8px',
+    fontSize: '18px',
+  };
+
+
+  const statusIconStyle2 = {
+    // position: 'absolute',
+    // right: 16,
+    backgroundColor: 'white',
+    color: completed ? 'green' : 'rgb(201 201 201)',
+    borderRadius: '50%',
+    padding: '16px',
+    fontSize: '42px',
+    lineHeight: '32px',
+    // display: 'flex',
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    width: '32px',
+    height: '32px',
+    margin: '16px 140px',
+  };
+
+  return (
+    <CardButtonWrapper completed={completed}>
+      {index && <IndexNumber>{index}</IndexNumber>}
+      <button style={cardButtonStyle} className="card-button">
+        <div style={cardContentStyle} className="card-content">
+          <div style={cardHeaderStyle} className="card-header">
+            <h2 style={{ margin: 'auto', padding: 8 }}>{completed ? title + ' Connected' : 'Connect to ' + title}</h2>
+
+          </div>
+          <p>{description}</p>
+          {Connect}
+        </div>
+      </button>
+      <div style={statusIconStyle2} className="status-icon">
+        {completed ? <> &#10003;</> : <>&#10003;</>}
+      </div>
+    </CardButtonWrapper>
+  );
+};
+
 export default function Home() {
   const [messages, setMessages] = useState(null);
   const convRef = useRef(null);
@@ -30,6 +122,7 @@ export default function Home() {
   // const [mode, setMode] = useState(Modes.Initial);
   const modeRef = useRef(Modes.Initial);
   const [nick, setNick] = useState('luser');
+  const [serverAddress, setServerAddress] = useState(PEER_ADDRESS);
   const [sismoResponse, setSismoResponse] = useState(null);
 
   // Function to load the existing messages in a conversation
@@ -120,32 +213,127 @@ export default function Home() {
     }
   }, [messages, isOnNetwork]);
 
-  const handleInputChange = (event) => {
+  const handleNickInputChange = (event) => {
     setNick(event.target.value);
+  };
+  const handleServerInputChange = (event) => {
+    setServerAddress(event.target.value);
   };
 
   return (
     <div className={styles.Home}>
+
       {/* Display the ConnectWallet component if not connected */}
-      {!isConnected && (
         <div className={styles.thirdWeb}>
-          <img
+          <div style={{
+            background: "orange",
+            height: "800px",
+            width: "90%",
+            borderRadius: "10px",
+            margin: "200px",
+            padding: "20px",
+            color: "white",
+          }}>
+            <div style={{ display: 'initial' }}>
+              <h1 style={{
+                fontFamily: 'Sarala-Regular',
+                fontSize: "100px",
+                fontWeight: "bold",
+                margin: "auto",
+              }}>SmolTalk</h1>
+              <h2>Private Data Group Chat with ZK privacy powered by Sismo</h2>
+
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                <label htmlFor="nickname">Nickname:</label>
+                <input
+                  type="text"
+                  id="nickname"
+                  onKeyPress={handleNickInputChange}
+                  onChange={handleNickInputChange}
+                  value={nick}
+                  placeholder="^[a-z_][a-z0-9_-]{2,15}$"
+                  style={{
+                    fontSize: "50px",
+                    padding: "10px",
+                    margin: "10px",
+                    width: "300px",
+                  }}
+                />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                <label htmlFor="serverAddress">Server Address:</label>
+                <input
+                  type="text"
+                  id="serverAddress"
+                  onKeyPress={handleServerInputChange}
+                  onChange={handleServerInputChange}
+                  value={serverAddress}
+                  placeholder="0x"
+                  style={{
+                    fontSize: "30px",
+                    padding: "10px",
+                    margin: "10px",
+                    width: "100%",
+                  }}
+                />
+              </div>
+
+            </div>
+
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
+              gap: '16px'
+            }}>
+              <CardButton index={1} title="Sismo"
+                completed={sismoResponse !== null}
+                Connect={<Sismo setSismoResponse={setSismoResponse} />}
+                description="Connect to Sismo to prove data group membership while hiding your identity. You must be a member of group 0x to join the chat. " />
+              <CardButton index={2} title="Wallet"
+                completed={isConnected}
+                Connect={<ConnectWallet theme="dark" />}
+                description="Connect your Ethereum (EVM) wallet to connect to the XMTP network. Use any account, it doesn't need to be the same as the Sismo group member. " />
+              <CardButton index={3} title="XMTP"
+                completed={isOnNetwork}
+                Connect={<button 
+                  disabled={!isConnected} 
+                  onClick={initXmtp} className={isConnected ? styles.btnXmtp : ''}
+                  style={{ color: '#000', fontWeight: 800, padding: 12}}>
+                  {isConnected ? 'Connect to XMTP' : 'Connect Wallet First'}
+                </button>}
+                description="Connect to XMTP by signing in with your wallet and communicate with others in the group." />
+              {/* <div style={{
+                display: 'inline-block',
+                width: '300px',
+                height: '300px',
+                borderRadius: '50%',
+              }}>
+              </div>           */}
+              {/* <ConnectWallet theme="dark" /> */}
+
+          </div>
+          </div>
+          {/* <img
             src="thirdweb-logo-transparent-white.svg"
             alt="Your image description"
             width={200}
-          />
-          <ConnectWallet theme="dark" />
+          /> */}
+          {/* <Sismo setSismoResponse={setSismoResponse} />
+          <ConnectWallet theme="dark" /> */}
         </div>
-      )}
       {/* Display XMTP connection options if connected but not initialized */}
-      {isConnected && !isOnNetwork && (
+      {/* {isConnected && !isOnNetwork && (
         <div className={styles.xmtp}>
           <ConnectWallet theme="light" />
           <button onClick={initXmtp} className={styles.btnXmtp}>
             Connect to XMTP
           </button>
         </div>
-      )}
+      )} */}
+      <div>
+        mode {getSetModes(modeRef.current)}
+      </div>
       {/* Render the Chat component if connected, initialized, and messages exist */}
       {isConnected && isOnNetwork && messages && (
         <Chat
@@ -154,14 +342,6 @@ export default function Home() {
           messageHistory={messages}
         />
       )}
-      <Sismo setSismoResponse={setSismoResponse} />
-      <input
-        type="text"
-        onKeyPress={handleInputChange}
-        onChange={handleInputChange}
-        value={nick}
-        placeholder="Type your name here "
-      />
     </div>
   );
 }
