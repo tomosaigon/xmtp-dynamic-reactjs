@@ -94,16 +94,18 @@ const CardButton = ({ title, description, completed, index, Connect }) => {
   return (
     <CardButtonWrapper completed={completed}>
       {index && <IndexNumber>{index}</IndexNumber>}
-      <button style={cardButtonStyle} className="card-button">
+      <div style={cardButtonStyle} className="card-button">
         <div style={cardContentStyle} className="card-content">
           <div style={cardHeaderStyle} className="card-header">
             <h2 style={{ margin: 'auto', padding: 8 }}>{completed ? title + ' Connected' : 'Connect to ' + title}</h2>
 
           </div>
           <p>{description}</p>
-          {Connect}
+          <div style={{ marginLeft: 'auto', marginRight: 'auto' }}>
+            {Connect}
+          </div>
         </div>
-      </button>
+      </div>
       <div style={statusIconStyle2} className="status-icon">
         {completed ? <> &#10003;</> : <>&#10003;</>}
       </div>
@@ -224,104 +226,104 @@ export default function Home() {
     <div className={styles.Home}>
 
       {/* Display the ConnectWallet component if not connected */}
-        <div className={styles.thirdWeb}>
-          <div style={{
-            background: "orange",
-            height: "800px",
-            width: "90%",
-            borderRadius: "10px",
-            margin: "200px",
-            padding: "20px",
-            color: "white",
-          }}>
-            <div style={{ display: 'initial' }}>
-              <h1 style={{
-                fontFamily: 'Sarala-Regular',
-                fontSize: "100px",
-                fontWeight: "bold",
-                margin: "auto",
-              }}>SmolTalk</h1>
-              <h2>Private Data Group Chat with ZK privacy powered by Sismo</h2>
+      <div className={styles.thirdWeb}>
+        <div style={{
+          background: "orange",
+          height: "800px",
+          width: "90%",
+          borderRadius: "10px",
+          margin: "200px",
+          padding: "20px",
+          color: "white",
+        }}>
+          <div style={{ display: 'initial' }}>
+            <h1 style={{
+              fontFamily: 'Sarala-Regular',
+              fontSize: "100px",
+              fontWeight: "bold",
+              margin: "auto",
+            }}>SmolTalk</h1>
+            <h2>Private Data Group Chat with ZK privacy powered by Sismo</h2>
 
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                <label htmlFor="nickname">Nickname:</label>
-                <input
-                  type="text"
-                  id="nickname"
-                  onKeyPress={handleNickInputChange}
-                  onChange={handleNickInputChange}
-                  value={nick}
-                  placeholder="^[a-z_][a-z0-9_-]{2,15}$"
-                  style={{
-                    fontSize: "50px",
-                    padding: "10px",
-                    margin: "10px",
-                    width: "300px",
-                  }}
-                />
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                <label htmlFor="serverAddress">Server Address:</label>
-                <input
-                  type="text"
-                  id="serverAddress"
-                  onKeyPress={handleServerInputChange}
-                  onChange={handleServerInputChange}
-                  value={serverAddress}
-                  placeholder="0x"
-                  style={{
-                    fontSize: "30px",
-                    padding: "10px",
-                    margin: "10px",
-                    width: "100%",
-                  }}
-                />
-              </div>
-
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+              <label htmlFor="nickname">Nickname:</label>
+              <input
+                type="text"
+                id="nickname"
+                onKeyPress={handleNickInputChange}
+                onChange={handleNickInputChange}
+                value={nick}
+                placeholder="^[a-z_][a-z0-9_-]{2,15}$"
+                style={{
+                  fontSize: "50px",
+                  padding: "10px",
+                  margin: "10px",
+                  width: "300px",
+                }}
+              />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+              <label htmlFor="serverAddress">Server Address:</label>
+              <input
+                type="text"
+                id="serverAddress"
+                onKeyPress={handleServerInputChange}
+                onChange={handleServerInputChange}
+                value={serverAddress}
+                placeholder="0x"
+                style={{
+                  fontSize: "30px",
+                  padding: "10px",
+                  margin: "10px",
+                  width: "100%",
+                }}
+              />
             </div>
 
-            <div style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'space-between',
-              gap: '16px'
-            }}>
-              <CardButton index={1} title="Sismo"
-                completed={sismoResponse !== null}
-                Connect={<Sismo setSismoResponse={setSismoResponse} />}
-                description="Connect to Sismo to prove data group membership while hiding your identity. You must be a member of group 0x to join the chat. " />
-              <CardButton index={2} title="Wallet"
-                completed={isConnected}
-                Connect={<ConnectWallet theme="dark" />}
-                description="Connect your Ethereum (EVM) wallet to connect to the XMTP network. Use any account, it doesn't need to be the same as the Sismo group member. " />
-              <CardButton index={3} title="XMTP"
-                completed={isOnNetwork}
-                Connect={<button 
-                  disabled={!isConnected} 
-                  onClick={initXmtp} className={isConnected ? styles.btnXmtp : ''}
-                  style={{ color: '#000', fontWeight: 800, padding: 12}}>
-                  {isConnected ? 'Connect to XMTP' : 'Connect Wallet First'}
-                </button>}
-                description="Connect to XMTP by signing in with your wallet and communicate with others in the group." />
-              {/* <div style={{
+          </div>
+
+          <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            gap: '16px'
+          }}>
+            <CardButton index={1} title="Sismo"
+              completed={sismoResponse !== null}
+              Connect={<Sismo setSismoResponse={setSismoResponse} />}
+              description="Connect to Sismo to prove data group membership while hiding your identity. You must be a member of group 0x to join the chat. " />
+            <CardButton index={2} title="Wallet"
+              completed={isConnected}
+              Connect={<ConnectWallet theme="dark" />}
+              description="Connect your Ethereum (EVM) wallet to connect to the XMTP network. Use any account, it doesn't need to be the same as the Sismo group member. " />
+            <CardButton index={3} title="XMTP"
+              completed={isOnNetwork}
+              Connect={<button
+                disabled={!isConnected}
+                onClick={initXmtp} className={isConnected ? styles.btnXmtp : ''}
+                style={{ color: '#000', fontWeight: 800, padding: 12, textAlign: 'center' }}>
+                {isConnected ? 'Connect to XMTP' : 'Connect Wallet First'}
+              </button>}
+              description="Connect to XMTP by signing in with your wallet and communicate with others in the group. First time requires 2 signatures." />
+            {/* <div style={{
                 display: 'inline-block',
                 width: '300px',
                 height: '300px',
                 borderRadius: '50%',
               }}>
               </div>           */}
-              {/* <ConnectWallet theme="dark" /> */}
+            {/* <ConnectWallet theme="dark" /> */}
 
           </div>
-          </div>
-          {/* <img
+        </div>
+        {/* <img
             src="thirdweb-logo-transparent-white.svg"
             alt="Your image description"
             width={200}
           /> */}
-          {/* <Sismo setSismoResponse={setSismoResponse} />
+        {/* <Sismo setSismoResponse={setSismoResponse} />
           <ConnectWallet theme="dark" /> */}
-        </div>
+      </div>
       {/* Display XMTP connection options if connected but not initialized */}
       {/* {isConnected && !isOnNetwork && (
         <div className={styles.xmtp}>
