@@ -7,6 +7,10 @@ import Chat from "./Chat";
 import Sismo from "./Sismo";
 import styles from "./Home.module.css";
 import styled from 'styled-components';
+import { DISCO_TEST_API_KEY } from "../apiKeys";
+
+const DISCO_ISSUER = 'did:3:kjzl6cwe1jw14be3xf0tlp2do529lo4jetn99gbwvdrgureee3w5ea135ankx2z';
+const DISCO_TEST_VC_ID = "https://api.disco.xyz/credential/ec8d685c-b570-4913-8a2c-2b1bd091510e";
 
 // const PEER_ADDRESS = "0x937C0d4a6294cdfa575de17382c7076b579DC176";
 const PEER_ADDRESS = "0xd684Ce5aAa919E99Fc030a379112668128644Cce";
@@ -43,14 +47,17 @@ const IndexNumber = styled.span`
   border-radius: 50%;
 `;
 
-const CardButton = ({ title, description, completed, index, Connect }) => {
+const CardButton = ({ title, description, completed, disabled, index, Connect }) => {
+  if (completed !== true && completed !== false) {
+    debugger;
+  }
   const cardButtonStyle = {
     width: '350px',
     height: '250px',
     border: 'none',
     borderRadius: '10px',
     boxShadow: !completed ? '0 4px 8px rgba(0, 0, 0, 0.3)' : 'none',
-    backgroundColor: completed ? 'rgb(217 152 34)' : '#3498db',
+    backgroundColor: completed ? 'rgb(217 152 34)' : (disabled ? 'grey' : '#3498db'),
     color: completed ? 'white' : 'white',
     // cursor: completed ? 'default' : 'pointer',
     outline: 'none',
@@ -78,7 +85,7 @@ const CardButton = ({ title, description, completed, index, Connect }) => {
     // position: 'absolute',
     // right: 16,
     backgroundColor: 'white',
-    color: completed ? 'green' : 'rgb(201 201 201)',
+    color: completed ? 'green' : (disabled ? 'grey' : 'rgb(201 201 201)'),
     borderRadius: '50%',
     padding: '16px',
     fontSize: '42px',
@@ -126,6 +133,34 @@ export default function Home() {
   const [nick, setNick] = useState('luser');
   const [serverAddress, setServerAddress] = useState(PEER_ADDRESS);
   const [sismoResponse, setSismoResponse] = useState(null);
+  const [identificationMethod, setIdentificationMethod] = useState('Sismo');
+  const [vcid, setVcid] = useState(DISCO_TEST_VC_ID);
+  const [discoApiKey, setDiscoApiKey] = useState(DISCO_TEST_API_KEY);
+  const issuer = DISCO_ISSUER;
+
+  const handleVerify = async () => {
+    const encodedId = encodeURIComponent(vcid);
+    const apiUrl = `https://api.disco.xyz/v1/credential/${encodedId}`;
+    const headers = new Headers({
+      'Authorization': `Bearer ${discoApiKey}`,
+    });
+
+    try {
+      const response = await fetch(apiUrl, { headers });
+      // console.log(response);
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        const memberId = data.vc.credentialSubject.memberId;
+        setNick(memberId);
+        return data;
+      } else {
+        throw new Error(`Failed to fetch data: ${response.status} - ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   // Function to load the existing messages in a conversation
   const newConversation = async function (xmtp_client, addressTo) {
@@ -229,7 +264,7 @@ export default function Home() {
       <div className={styles.thirdWeb}>
         <div style={{
           background: "orange",
-          height: "800px",
+          height: "1000px",
           width: "90%",
           borderRadius: "10px",
           margin: "200px",
@@ -246,6 +281,67 @@ export default function Home() {
             <h2>Private Data Group Chat with ZK privacy powered by Sismo</h2>
 
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+
+
+              <div style={{ padding: '20px' }}>
+                <div>
+                  <label style={{ display: 'block' }}>Identification method</label>
+                  <label style={{ marginRight: '10px' }}>
+                    <input
+                      type="radio"
+                      value="Sismo"
+                      checked={identificationMethod === 'Sismo'}
+                      onChange={() => setIdentificationMethod('Sismo')}
+                    />
+                    Sismo
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="Disco"
+                      checked={identificationMethod === 'Disco'}
+                      onChange={() => setIdentificationMethod('Disco')}
+                    />
+                    Disco
+                  </label>
+                </div>
+
+                {identificationMethod === 'Disco' && (
+                  <div style={{ display: 'flex' }}>
+                    <label style={{ display: 'block', marginTop: '10px' }}>
+                      VC ID for membership from {issuer}
+                    </label>
+                    <input
+                      type="text"
+                      value={vcid}
+                      onChange={(e) => setVcid(e.target.value)}
+                      style={{
+                        fontSize: "20px",
+                        padding: "10px",
+                        margin: "10px",
+                        width: "100%",
+                      }}
+                    />
+
+                    <label style={{ display: 'block', marginTop: '10px' }}>
+                      Disco API Key
+                    </label>
+                    <input type="text" value={discoApiKey} onChange={(e) => setDiscoApiKey(e.target.value)} />
+                    <button style={{}} onClick={handleVerify}>Verify</button>
+                    <div >
+                    </div>
+                  </div>
+                )}
+
+              </div>
+
+
+
+
+
+
+
+
               <label htmlFor="nickname">Nickname:</label>
               <input
                 type="text"
@@ -289,6 +385,7 @@ export default function Home() {
             gap: '16px'
           }}>
             <CardButton index={1} title="Sismo"
+              disabled={identificationMethod !== 'Sismo'}
               completed={sismoResponse !== null}
               Connect={<Sismo setSismoResponse={setSismoResponse} />}
               description="Connect to Sismo to prove data group membership while hiding your identity. You must be a member of group 0x to join the chat. " />
