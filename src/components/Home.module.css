@@ -37,64 +37,10 @@
 
 .sliding {
   /* display: flex; */
-  align-items: center;
-  justify-content: center;
   height: 100px;
   overflow: hidden;
   display: inline-block;
   font-size: 36px;
   margin: -24px 8px;
-}
-
-.textcontainer {
-  display: flex;
-  width: 100%;
-  animation: slide 2s infinite;
-}
-
-.text {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  text-align: left;
-}
-
-.pair {
-  /* display: none; */
-}
-
-/* @keyframes slide {
-
-  0%,
-  40% {
-    transform: translateX(0%);
-  }
-
-  50%,
-  90% {
-    transform: translateX(-100%);
-  }
-} */
-
-@keyframes slide {
-
-  0%,
-  20% {
-    transform: translateX(0%);
-  }
-
-  25%,
-  45% {
-    transform: translateX(-100%);
-  }
-
-  50%,
-  70% {
-    transform: translateX(-100%);
-  }
-
-  75%,
-  95% {
-    transform: translateX(0%);
-  }
+  padding: 0px 16px;
 }

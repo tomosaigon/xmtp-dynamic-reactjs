@@ -39,18 +39,14 @@ const SlidingText = () => {
     const interval = setInterval(() => {
       const nextIndex = (currentIndex + 1) % pairs[0].length;
       setCurrentIndex(nextIndex);
-    }, 1000);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [currentIndex]);
 
   return (
     <div className={styles.sliding}>
-      <div className={styles.textcontainer}>
-        <div className={styles.text}>
-          <div className={styles.pair}>{pairs[0][currentIndex]}</div>
-        </div>
-      </div>
+          <div >{pairs[0][currentIndex]}</div>
     </div>
   );
 };
