@@ -1,6 +1,9 @@
 
 # SmolTalk
 
+- Frontend for SmolTalk (you're looking at it): https://github.com/tomosaigon/xmtp-dynamic-reactjs
+- XMTP service repo for SmolTalk: https://github.com/tomosaigon/xmtp-sismo-chat
+
 ![smoltalk 001](https://github.com/tomosaigon/xmtp-dynamic-reactjs/assets/1016509/0cee08d4-1b81-4f40-8251-a525c8bb625b)
 
 ![smoltalk 002](https://github.com/tomosaigon/xmtp-dynamic-reactjs/assets/1016509/bee93218-e07e-411d-921c-6065feeffa07)
