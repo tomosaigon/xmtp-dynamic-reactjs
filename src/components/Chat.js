@@ -50,6 +50,15 @@ function BroadcastMessage(props) {
     </>
   );
 }
+function SystemMessage({ message }) {
+  const respCodeRegex = /^HTTP\/1.1 (\d{3})\s/;
+  if (respCodeRegex.test(message.content)) {
+    return <span>*** UNEXPECTED: """{message.content}"""</span>;
+  }
+  return (
+    <span>*** {message.content}</span>
+  );
+}
 
 function Chat({ client, messageHistory, conversation }) {
   const address = useAddress();
@@ -81,6 +90,9 @@ function Chat({ client, messageHistory, conversation }) {
     return conversation.send(value);
   };
 
+  const currentDate = new Date();
+  const oneWeekAgo = new Date(currentDate);
+  oneWeekAgo.setDate(currentDate.getDate() - 7);
   // MessageList component to render the list of messages
   const MessageList = ({ messages }) => {
     // Filter messages by unique id
@@ -90,6 +102,10 @@ function Chat({ client, messageHistory, conversation }) {
     // Filter out our messages
     messages = messages.filter(
       (v) => v.senderAddress !== address
+    );
+    // Filter out messages older than one week
+    messages = messages.filter(
+      (v) => v.sent > oneWeekAgo
     );
     return (
       <ul className="messageList">
@@ -102,6 +118,7 @@ function Chat({ client, messageHistory, conversation }) {
             <code>
               <span className="date">
                 {message.sent.toLocaleTimeString('en-US', {
+                  weekday: 'short', 
                   hour: '2-digit',
                   minute: '2-digit',
                   second: '2-digit',
