@@ -25,11 +25,30 @@ const GROUP_ID = "0x5f52cf60d2daf39e7faf41a3b86673b9";
 
 const MESSAGE = "I wanna chat with my SisterMothers";
 
+function UserID({ response }) {
+    if (
+        response &&
+        response.proofs &&
+        response.proofs[0] &&
+        response.proofs[0].auths &&
+        response.proofs[0].auths[0] &&
+        response.proofs[0].auths[0].userId
+    ) {
+        const userId = response.proofs[0].auths[0].userId;
+        const abbreviatedUserId =
+            userId.substring(0, 8) + '...' + userId.substring(userId.length - 6);
+        return <p>UserID: {abbreviatedUserId}</p>;
+    } else {
+        return <p>User ID not found</p>;
+    }
+}
+
 function Sismo({ setSismoResponse }) {
     const { response, responseBytes, sismoConnect } = useSismoConnect({ config })
     return (
         <div>
-            {/* {response && <div>Sismo Connected, response: {JSON.stringify(response)}</div>} */}
+            { response && <UserID response={response} /> }
+            <div style={{display: response ? 'none' : 'block'}}>
             <SismoConnectButton
                 config={config}
                 auths={[{ authType: AuthType.VAULT }]}
@@ -54,6 +73,7 @@ function Sismo({ setSismoResponse }) {
             //   console.log(response);
             // }}
             />
+            </div>
         </div>
     )
 }
