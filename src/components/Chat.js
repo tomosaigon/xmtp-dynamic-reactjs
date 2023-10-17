@@ -46,13 +46,13 @@ function BroadcastMessage(props) {
   return (
     <>
       <span style={{ fontWeight: 'bold', color: userColors[senderName] }}>&lt;{senderName}&gt;&nbsp;</span>
-      <span>{messageContent}</span>
+      <span style={{ fontWeight: 'bold', color: '#333' }}>{messageContent}</span>
     </>
   );
 }
-function SystemMessage({ message }) {
+function SystemMessage({ message, setNames, setTopic }) {
   const respCodeRegex = /^HTTP\/1.1 (\d{3})\s/;
-  if (respCodeRegex.test(message.content)) {
+  if (!respCodeRegex.test(message.content)) {
     return <span>*** UNEXPECTED: """{message.content}"""</span>;
   }
   return (
@@ -64,6 +64,8 @@ function Chat({ client, messageHistory, conversation }) {
   const address = useAddress();
   const [inputValue, setInputValue] = useState("");
   const [userColors, setUserColors] = useState({});
+  const namesRef = useRef([]);
+  const topicRef = useRef("");
   const targetElementRef = useRef(null);
 
   // scrollIntoView
@@ -71,7 +73,7 @@ function Chat({ client, messageHistory, conversation }) {
     if (targetElementRef.current) {
       targetElementRef.current.scrollIntoView({
         behavior: 'smooth',
-        block: 'start', 
+        block: 'start',
         inline: 'nearest'
       });
     }
@@ -93,6 +95,26 @@ function Chat({ client, messageHistory, conversation }) {
   const currentDate = new Date();
   const oneWeekAgo = new Date(currentDate);
   oneWeekAgo.setDate(currentDate.getDate() - 7);
+  const oneMinAgo = new Date(currentDate);
+  oneMinAgo.setMinutes(currentDate.getMinutes() - 1);
+  for (let i = 0; i < messageHistory.length; i++) {
+    if (messageHistory[i].sent > oneMinAgo) {
+      if (!isBroadcastMessage(messageHistory[i])) {
+        if (messageHistory[i].senderAddress !== address) {
+          if (messageHistory[i].content.startsWith('HTTP/1.1 200')) {
+            const body = messageHistory[i].content.split('\n').slice(1).join('\n');
+            if (/^\nTopic: /.test(body)) {
+              topicRef.current = body.replace(/^\nTopic: /, '');
+              console.log('topicRef.current', topicRef.current);
+            }
+            if (/^\nNames: /.test(body)) {
+              namesRef.current = body.replace(/^\nNames: /, '').split(' ');
+            }
+          }
+        }
+      }
+    }
+  }
   // MessageList component to render the list of messages
   const MessageList = ({ messages }) => {
     // Filter messages by unique id
@@ -107,6 +129,12 @@ function Chat({ client, messageHistory, conversation }) {
     messages = messages.filter(
       (v) => v.sent > oneWeekAgo
     );
+
+    useEffect(() => {
+      if (chatRef.current && waitForInitialScroll) {
+        chatRef.current.scrollTop = chatRef.current.scrollHeight;
+      }
+    }, [messages]);
     return (
       <ul className="messageList">
         {messages.map((message, index) => (
@@ -118,7 +146,7 @@ function Chat({ client, messageHistory, conversation }) {
             <code>
               <span className="date">
                 {message.sent.toLocaleTimeString('en-US', {
-                  weekday: 'short', 
+                  weekday: 'short',
                   hour: '2-digit',
                   minute: '2-digit',
                   second: '2-digit',
@@ -126,9 +154,11 @@ function Chat({ client, messageHistory, conversation }) {
                 })}
                 {' '}
               </span>
-              {message.content[0] == '<' || isBroadcastMessage(message) ?
+              {/*message.content[0] == '<' ||*/ isBroadcastMessage(message) ?
                 <BroadcastMessage userColors={userColors} setUserColors={setUserColors} {...parseBroadcastMessage(message.content)} /> :
-                <span>*** {message.content}</span>}
+                <SystemMessage message={message} />
+                // <span>*** {message.content}</span>
+              }
             </code>
             {/* <strong>
               {message.senderAddress === address ? "You" : "Bot"}:
@@ -152,11 +182,65 @@ function Chat({ client, messageHistory, conversation }) {
       setInputValue(event.target.value);
     }
   };
+  const topicStyle = {
+    fontWeight: 'bold',
+    color: 'blue',
+    borderBottom: '1px solid #ccc',
+  };
+  const containerStyle = {
+    display: 'flex',
+    height: '90vh'
+  };
+  const leftContainerStyle = {
+    flex: 1,
+    overflowY: 'scroll',
+    // border: '1px solid #000',
+    // padding: '10px',
+  };
+  const rightContainerStyle = {
+    width: '200px',
+    borderLeft: '1px solid #ccc',
+    // padding: '10px',
+  };
+  const namesStyle = {
+    fontWeight: 'bold',
+    color: 'green',
+  };
+  const chatRef = useRef(null);
+  const [waitForInitialScroll, setWaitForInitialScroll] = useState(false);
+
+  useEffect(() => {
+    // Use setTimeout to set the variable to true after 2 seconds
+    const timeout = setTimeout(() => {
+      setWaitForInitialScroll(true);
+    }, 2000); // 2000 milliseconds = 2 seconds
+
+    // Clean up the timer when the component unmounts
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, []);
+
   return (
-    <div className={styles.Chat}>
+    <div className={styles.Chat} style={{maxHeight: '100vh'}}>
       <div ref={targetElementRef}></div>
-      <div className={styles.messageContainer}>
-        <MessageList messages={messageHistory} />
+      <div style={topicStyle}><span style={{ color: '#ccc' }}>Server Topic:</span> <code>{topicRef.current}</code></div>
+      <div style={containerStyle}>
+        <div ref={chatRef} style={leftContainerStyle}>
+          <div className={styles.messageContainer}>
+            <MessageList messages={messageHistory} />
+          </div>
+        </div>
+        <div style={rightContainerStyle}>
+          <h2>Users</h2>
+          <ul>
+            {namesRef.current.map((name, index) => (
+              <li key={index}>
+                <span style={{ fontWeight: 'bold', color: userColors[name] }}>&lt;{name}&gt;&nbsp;</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
       <div className={styles.inputContainer}>
         <input

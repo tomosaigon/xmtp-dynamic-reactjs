@@ -222,6 +222,8 @@ export default function Home() {
                     } {
                       modeRef.current = ((modeRef.current ^ Modes.Pinged) | Modes.Connected | Modes.GMed);
                     }
+                    convRef.current.send("/topic");
+                    convRef.current.send("/names");
                     convRef.current.send("gm.");
                   } else if (msg.content.split(' ')[1] === "420") {
                     modeRef.current = ((modeRef.current ^ Modes.Pinged) | Modes.ConnectRequired);
@@ -278,7 +280,7 @@ export default function Home() {
               fontWeight: "bold",
               margin: "auto",
             }}>SmolTalk</h1>
-            <h2>Private Data Group Chat with ZK privacy powered by Sismo</h2>
+            <h2>Private Data Group Chat with ZK privacy powered by Sismo, friends with Disco</h2>
 
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
 
@@ -430,9 +432,9 @@ export default function Home() {
           </button>
         </div>
       )} */}
-      <div>
+      {/* <div>
         mode {getSetModes(modeRef.current)}
-      </div>
+      </div> */}
       {/* Render the Chat component if connected, initialized, and messages exist */}
       {isConnected && isOnNetwork && messages && (
         <Chat
