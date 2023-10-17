@@ -28,6 +28,33 @@ function getSetModes(mode) {
   return Object.keys(Modes).filter(key => mode & Modes[key]).join(', ');
 }
 
+const SlidingText = () => {
+  const pairs = [
+    ['Authentic Connections', 'Anonymous Conversations', 'Ad-Hoc Communities'],
+  ];
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const nextIndex = (currentIndex + 1) % pairs[0].length;
+      setCurrentIndex(nextIndex);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [currentIndex]);
+
+  return (
+    <div className={styles.sliding}>
+      <div className={styles.textcontainer}>
+        <div className={styles.text}>
+          <div className={styles.pair}>{pairs[0][currentIndex]}</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const CardButtonWrapper = styled.div`
   position: relative;
   transition: transform 0.2s, box-shadow 0.2s, border 0.2s;
@@ -279,8 +306,27 @@ export default function Home() {
               fontSize: "100px",
               fontWeight: "bold",
               margin: "auto",
-            }}>SmolTalk</h1>
+            }}>  
+              SmolTalk
+              <span style={{
+                display: 'inline-block',
+                padding: '0px 8px 0 0',
+                background: 'white',
+                borderRadius: '10px',
+                height: '124px',
+                margin: '0 0 0 16px',
+              }}>
+                <img
+                  src="smoltalk111logo.gif"
+                  alt="SmolTalk logo"
+                  width={111}
+                  style={{ borderRadius: '10px', marginLeft: '10px' }}
+                />
+              </span>
+              <SlidingText />
+            </h1>
             <h2>Private Data Group Chat with ZK privacy powered by Sismo, friends with Disco</h2>
+
 
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
 

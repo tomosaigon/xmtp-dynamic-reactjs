@@ -1,10 +1,9 @@
-
-.Home{
+.Home {
   background-color: white;
-  color:black
+  color: black
 }
 
-.thirdWeb{
+.thirdWeb {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -12,14 +11,16 @@
   background-color: black;
   height: 100vh;
 }
-.xmtp{
+
+.xmtp {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
 }
-.btnXmtp{
+
+.btnXmtp {
   all: unset;
   background: hsl(300, 20.0%, 99.0%);
   border: 1px solid hsl(278, 4.1%, 89.1%);
@@ -31,4 +32,69 @@
   box-sizing: border-box;
   line-height: 1;
   margin: 10px;
+}
+
+
+.sliding {
+  /* display: flex; */
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  overflow: hidden;
+  display: inline-block;
+  font-size: 36px;
+  margin: -24px 8px;
+}
+
+.textcontainer {
+  display: flex;
+  width: 100%;
+  animation: slide 2s infinite;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-align: left;
+}
+
+.pair {
+  /* display: none; */
+}
+
+/* @keyframes slide {
+
+  0%,
+  40% {
+    transform: translateX(0%);
+  }
+
+  50%,
+  90% {
+    transform: translateX(-100%);
+  }
+} */
+
+@keyframes slide {
+
+  0%,
+  20% {
+    transform: translateX(0%);
+  }
+
+  25%,
+  45% {
+    transform: translateX(-100%);
+  }
+
+  50%,
+  70% {
+    transform: translateX(-100%);
+  }
+
+  75%,
+  95% {
+    transform: translateX(0%);
+  }
 }
